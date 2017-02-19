@@ -20,7 +20,7 @@ current_weight = 0
 
 
 def can_accomodate():
-    additional_persons = math.floor((overload_limit-current_weight)/65);
+    additional_persons = math.floor((overload_limit-current_weight)/AVG_WEIGHT);
     return additional_persons
 
 

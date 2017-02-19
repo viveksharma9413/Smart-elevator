@@ -55,7 +55,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(2)
 _thread.start_new_thread(simulate_lift, ())
-print("Here")
+
 while True:
     conn, addr = s.accept()
     print('Connected by', addr)

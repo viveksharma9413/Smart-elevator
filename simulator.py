@@ -86,25 +86,38 @@ def lift_simulator(panel_in,panel_out):
 def estimated_time_of_arrival(curr_lift_floor, display_floor):
     lst = []
     estimated_time = 0
+    cnt_in_btwn_floors =0
+    if can_accommodate() == 0:
+        if motion == UP:
+            for x in floor_list:
+                if x > curr_lift_floor:
+                    cnt_in_btwn_floors += x - curr_lift_floor
+                    curr_lift_floor = x
+
+        elif motion == DOWN:
+            for x in floor_list:
+                if x < curr_lift_floor:
+                    cnt_in_btwn_floors += curr_lift_floor - x
+                    curr_lift_floor = x
 
     if motion == UP:
         if curr_lift_floor < display_floor:
             lst.extend([x for x in floor_list if x < display_floor and x >= curr_lift_floor])
-            cnt_in_btwn_floors = display_floor - curr_lift_floor
+            cnt_in_btwn_floors += display_floor - curr_lift_floor
         else:
             lst.extend([x for x in floor_list if x > display_floor ])
-            cnt_in_btwn_floors = 2*(max(floor_list) - curr_lift_floor) + curr_lift_floor - display_floor
+            cnt_in_btwn_floors += 2*(max(floor_list) - curr_lift_floor) + curr_lift_floor - display_floor
 
     elif motion == DOWN:
         if curr_lift_floor > display_floor:
             lst.extend([x for x in floor_list if x > display_floor and x <= curr_lift_floor])
-            cnt_in_btwn_floors = curr_lift_floor - display_floor
+            cnt_in_btwn_floors += curr_lift_floor - display_floor
         else:
             lst.extend([x for x in floor_list if x < display_floor])
-            cnt_in_btwn_floors = 2 * (curr_lift_floor - min(floor_list)) + curr_lift_floor - display_floor
+            cnt_in_btwn_floors += 2 * (curr_lift_floor - min(floor_list)) + curr_lift_floor - display_floor
 
     else:
-        cnt_in_btwn_floors = math.fabs(curr_lift_floor-display_floor)
+        cnt_in_btwn_floors += math.fabs(curr_lift_floor-display_floor)
         if cnt_in_btwn_floors != 0:
             estimated_time += TIME_TO_HALT
 

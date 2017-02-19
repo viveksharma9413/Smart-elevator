@@ -1,12 +1,22 @@
 import socket
 import pickle
 import _thread
-
+import simulator
+import time
 HOST = socket.gethostname()
 PORT = 50007
 panel_in = []
 panel_out = []
 floor_register = []
+
+
+def simulate_lift():
+    while True:
+        time.sleep(0.5)
+        print(floor_register.__len__())
+        if floor_register.__len__() != 0:
+            simulator.lift_simulator(floor_register,panel_in,panel_out)
+
 
 def on_new_client(clientsocket,addr):
     while True:
@@ -34,16 +44,22 @@ def on_new_client(clientsocket,addr):
             clientsocket.send(data_string)
         print(panel_in)
         print(panel_out)
+        global floor_register
         floor_register=list(set(panel_in) | set(panel_out))
-        print(floor_register)
+        estimated_time_to_arrive ={}
+        for floor in panel_out:
+            estimated_time_to_arrive[floor]=simulator.estimated_time_of_arrival(simulator.CURR_FLOOR,floor_register, floor)
+        print(estimated_time_to_arrive)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(2)
+_thread.start_new_thread(simulate_lift, ())
+print("Here")
 while True:
     conn, addr = s.accept()
     print('Connected by', addr)
-    _thread.start_new_thread(on_new_client,(conn,addr))
+    _thread.start_new_thread(on_new_client, (conn,addr))
 
     print(panel_in)
     print(panel_out)

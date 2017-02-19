@@ -12,10 +12,16 @@ UP = 1
 DOWN = -1
 STOP = 0
 CURR_FLOOR = 0
+AVG_WEIGHT=68
 
 motion = STOP
 overload_limit = 1000
 current_weight = 0
+
+
+def can_accomodate():
+    additional_persons = math.floor((overload_limit-current_weight)/65);
+    return additional_persons
 
 
 def set_motion(floor_max,floor_min):
@@ -25,7 +31,7 @@ def set_motion(floor_max,floor_min):
     elif motion == DOWN and floor_min > CURR_FLOOR:
         motion = UP
     elif motion == STOP:
-        if floor_min==floor_max:
+        if floor_min == floor_max:
             motion = DOWN if floor_min > CURR_FLOOR else UP
         elif math.fabs(floor_max-CURR_FLOOR) > math.fabs(CURR_FLOOR-floor_min):
             motion = DOWN
@@ -48,8 +54,14 @@ def lift_simulator(floor_list,panel_in,panel_out):
             floor_list.pop(floor_list.index(CURR_FLOOR))
             if CURR_FLOOR in panel_in:
                 panel_in.pop(panel_in.index(CURR_FLOOR))
+                people_left = input("Enter No. of persons who left the lift : ")
+                current_weight -= int(people_left)*AVG_WEIGHT
+                print("Can Accommodate : ", can_accomodate())
             if CURR_FLOOR in panel_out:
                 panel_out.pop(panel_out.index(CURR_FLOOR))
+                people_entered = input("Enter No. of persons who entered the lift : ")
+                current_weight += int(people_entered)*AVG_WEIGHT
+                print("Can Accommodate : ", can_accomodate())
             time.sleep(DOOR_OPENING_TIME+DOOR_OPEN_TIME+TIME_TO_HALT+DOOR_CLOSING_TIME)
         else:
             print("The lift is now at floor :", CURR_FLOOR)

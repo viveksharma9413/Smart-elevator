@@ -12,7 +12,10 @@ UP = 1
 DOWN = -1
 STOP = 0
 CURR_FLOOR = 0
+
 motion = STOP
+overload_limit = 1000
+current_weight = 0
 
 
 def set_motion(floor_max,floor_min):
@@ -34,13 +37,14 @@ def set_motion(floor_max,floor_min):
 def lift_simulator(floor_list,panel_in,panel_out):
     global motion
     global CURR_FLOOR
+    global current_weight
     set_motion(max(floor_list),min(floor_list))
     while floor_list.__len__() != 0:
 
         if CURR_FLOOR in floor_list:
-            print(2*TIME_TO_HALT+DOOR_OPENING_TIME+DOOR_OPEN_TIME+DOOR_CLOSING_TIME)
+            # print(2*TIME_TO_HALT+DOOR_OPENING_TIME+DOOR_OPEN_TIME+DOOR_CLOSING_TIME)
             time.sleep(TIME_TO_HALT)
-            print(CURR_FLOOR)
+            print("The lift is now at floor :", CURR_FLOOR)
             floor_list.pop(floor_list.index(CURR_FLOOR))
             if CURR_FLOOR in panel_in:
                 panel_in.pop(panel_in.index(CURR_FLOOR))
@@ -48,13 +52,13 @@ def lift_simulator(floor_list,panel_in,panel_out):
                 panel_out.pop(panel_out.index(CURR_FLOOR))
             time.sleep(DOOR_OPENING_TIME+DOOR_OPEN_TIME+TIME_TO_HALT+DOOR_CLOSING_TIME)
         else:
-            print(CURR_FLOOR)
+            print("The lift is now at floor :", CURR_FLOOR)
         time.sleep(FLOOR_HEIGHT/CAR_SPEED)
 
         if floor_list.__len__() != 0:
             motion = set_motion(max(floor_list), min(floor_list))
-        CURR_FLOOR += motion
-
+            CURR_FLOOR += motion
+    motion = STOP
 
 def estimated_time_of_arrival(curr_lift_floor, floor_list, display_floor):
     lst = []
@@ -82,8 +86,8 @@ def estimated_time_of_arrival(curr_lift_floor, floor_list, display_floor):
 
     no_stops = len(lst)
 
-    print(no_stops,cnt_in_btwn_floors)
-    print(floor_list)
+    # print(no_stops,cnt_in_btwn_floors)
+    # print(floor_list)
     estimated_time += cnt_in_btwn_floors*(FLOOR_HEIGHT/CAR_SPEED)
     estimated_time += no_stops * (2 * TIME_TO_HALT + DOOR_OPENING_TIME + DOOR_OPEN_TIME + DOOR_CLOSING_TIME)
     return estimated_time

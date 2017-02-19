@@ -13,7 +13,6 @@ floor_register = []
 def simulate_lift():
     while True:
         time.sleep(0.5)
-        print(floor_register.__len__())
         if floor_register.__len__() != 0:
             simulator.lift_simulator(floor_register,panel_in,panel_out)
 
@@ -42,14 +41,15 @@ def on_new_client(clientsocket,addr):
             data_string = pickle.dumps(panel_out)
             panel_out.pop()
             clientsocket.send(data_string)
-        print(panel_in)
-        print(panel_out)
+        # print(panel_in)
+        # print(panel_out)
         global floor_register
         floor_register=list(set(panel_in) | set(panel_out))
         estimated_time_to_arrive ={}
-        for floor in panel_out:
-            estimated_time_to_arrive[floor]=simulator.estimated_time_of_arrival(simulator.CURR_FLOOR,floor_register, floor)
-        print(estimated_time_to_arrive)
+        if panel_out.__len__()!=0:
+            for floor in panel_out:
+                estimated_time_to_arrive[floor] = simulator.estimated_time_of_arrival(simulator.CURR_FLOOR,floor_register, floor)
+            print(estimated_time_to_arrive)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
@@ -60,6 +60,3 @@ while True:
     conn, addr = s.accept()
     print('Connected by', addr)
     _thread.start_new_thread(on_new_client, (conn,addr))
-
-    print(panel_in)
-    print(panel_out)

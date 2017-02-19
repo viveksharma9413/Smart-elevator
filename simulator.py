@@ -33,7 +33,12 @@ def set_motion(floor_max,floor_min):
         motion = UP
     elif motion == STOP:
         if floor_min == floor_max:
-            motion = DOWN if floor_min > CURR_FLOOR else UP
+            if floor_min > CURR_FLOOR:
+                motion = UP
+            elif floor_min < CURR_FLOOR:
+                motion = DOWN
+            else:
+                motion = STOP
         elif math.fabs(floor_max-CURR_FLOOR) > math.fabs(CURR_FLOOR-floor_min):
             motion = DOWN
         else:
@@ -100,7 +105,8 @@ def estimated_time_of_arrival(curr_lift_floor, display_floor):
 
     else:
         cnt_in_btwn_floors = math.fabs(curr_lift_floor-display_floor)
-        estimated_time += TIME_TO_HALT
+        if cnt_in_btwn_floors != 0:
+            estimated_time += TIME_TO_HALT
 
     no_stops = len(lst)
 

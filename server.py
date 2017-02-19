@@ -11,6 +11,7 @@ floor_register = []
 
 
 def simulate_lift():
+    print("Can Accommodate : ", simulator.can_accomodate())
     while True:
         time.sleep(0.5)
         if floor_register.__len__() != 0:

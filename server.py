@@ -7,18 +7,17 @@ HOST = socket.gethostname()
 PORT = 50007
 panel_in = []
 panel_out = []
-floor_register = []
 
 
 def simulate_lift():
-    print("Can Accommodate : ", simulator.can_accomodate())
+    print("Can Accommodate : ", simulator.can_accommodate())
     while True:
         time.sleep(0.5)
-        if floor_register.__len__() != 0:
-            simulator.lift_simulator(floor_register,panel_in,panel_out)
+        if simulator.floor_list.__len__() != 0:
+            simulator.lift_simulator(panel_in,panel_out)
 
 
-def on_new_client(clientsocket,addr):
+def on_new_client(clientsocket, addr):
     while True:
         data = clientsocket.recv(4096)
         if not data:
@@ -42,14 +41,12 @@ def on_new_client(clientsocket,addr):
             data_string = pickle.dumps(panel_out)
             panel_out.pop()
             clientsocket.send(data_string)
-        # print(panel_in)
-        # print(panel_out)
-        global floor_register
-        floor_register=list(set(panel_in) | set(panel_out))
-        estimated_time_to_arrive ={}
-        if panel_out.__len__()!=0:
+
+        simulator.floor_list = list(set(panel_in) | set(panel_out))
+        estimated_time_to_arrive = {}
+        if panel_out.__len__() != 0:
             for floor in panel_out:
-                estimated_time_to_arrive[floor] = simulator.estimated_time_of_arrival(simulator.CURR_FLOOR,floor_register, floor)
+                estimated_time_to_arrive[floor] = simulator.estimated_time_of_arrival(simulator.CURR_FLOOR, floor)
             print(estimated_time_to_arrive)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

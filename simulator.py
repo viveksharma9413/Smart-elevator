@@ -17,9 +17,10 @@ AVG_WEIGHT=68
 motion = STOP
 overload_limit = 1000
 current_weight = 0
+floor_list =[]
 
 
-def can_accomodate():
+def can_accommodate():
     additional_persons = math.floor((overload_limit-current_weight)/AVG_WEIGHT);
     return additional_persons
 
@@ -40,29 +41,33 @@ def set_motion(floor_max,floor_min):
     return motion
 
 
-def lift_simulator(floor_list,panel_in,panel_out):
+def lift_simulator(panel_in,panel_out):
     global motion
     global CURR_FLOOR
     global current_weight
+    global floor_list
     set_motion(max(floor_list),min(floor_list))
     while floor_list.__len__() != 0:
 
         if CURR_FLOOR in floor_list:
             # print(2*TIME_TO_HALT+DOOR_OPENING_TIME+DOOR_OPEN_TIME+DOOR_CLOSING_TIME)
-            time.sleep(TIME_TO_HALT)
-            print("The lift is now at floor :", CURR_FLOOR)
-            floor_list.pop(floor_list.index(CURR_FLOOR))
-            if CURR_FLOOR in panel_in:
-                panel_in.pop(panel_in.index(CURR_FLOOR))
-                people_left = input("Enter No. of persons who left the lift : ")
-                current_weight -= int(people_left)*AVG_WEIGHT
-                print("Can Accommodate : ", can_accomodate())
-            if CURR_FLOOR in panel_out:
-                panel_out.pop(panel_out.index(CURR_FLOOR))
-                people_entered = input("Enter No. of persons who entered the lift : ")
-                current_weight += int(people_entered)*AVG_WEIGHT
-                print("Can Accommodate : ", can_accomodate())
-            time.sleep(DOOR_OPENING_TIME+DOOR_OPEN_TIME+TIME_TO_HALT+DOOR_CLOSING_TIME)
+            if CURR_FLOOR not in panel_in and can_accommodate() == 0:
+                print("The lift is now bypassing floor :", CURR_FLOOR)
+            else:
+                time.sleep(TIME_TO_HALT)
+                print("The lift is now at floor :", CURR_FLOOR)
+                floor_list.pop(floor_list.index(CURR_FLOOR))
+                if CURR_FLOOR in panel_in:
+                    panel_in.pop(panel_in.index(CURR_FLOOR))
+                    people_left = input("Enter No. of persons who left the lift : ")
+                    current_weight -= int(people_left)*AVG_WEIGHT
+                    print("Can Accommodate : ", can_accommodate())
+                if CURR_FLOOR in panel_out:
+                    panel_out.pop(panel_out.index(CURR_FLOOR))
+                    people_entered = input("Enter No. of persons who entered the lift : ")
+                    current_weight += int(people_entered)*AVG_WEIGHT
+                    print("Can Accommodate : ", can_accommodate())
+                time.sleep(DOOR_OPENING_TIME+DOOR_OPEN_TIME+TIME_TO_HALT+DOOR_CLOSING_TIME)
         else:
             print("The lift is now at floor :", CURR_FLOOR)
         time.sleep(FLOOR_HEIGHT/CAR_SPEED)
@@ -72,7 +77,8 @@ def lift_simulator(floor_list,panel_in,panel_out):
             CURR_FLOOR += motion
     motion = STOP
 
-def estimated_time_of_arrival(curr_lift_floor, floor_list, display_floor):
+
+def estimated_time_of_arrival(curr_lift_floor, display_floor):
     lst = []
     estimated_time = 0
 
@@ -98,8 +104,6 @@ def estimated_time_of_arrival(curr_lift_floor, floor_list, display_floor):
 
     no_stops = len(lst)
 
-    # print(no_stops,cnt_in_btwn_floors)
-    # print(floor_list)
     estimated_time += cnt_in_btwn_floors*(FLOOR_HEIGHT/CAR_SPEED)
     estimated_time += no_stops * (2 * TIME_TO_HALT + DOOR_OPENING_TIME + DOOR_OPEN_TIME + DOOR_CLOSING_TIME)
     return estimated_time
